@@ -2,7 +2,8 @@
 Hi, this is a project that follows the requiriments of [TaskTracker](https://roadmap.sh/projects/task-tracker). However, I have used Junit5 to develop with TDD.
 
 To execute use this command:  
-  `java -jar TaskTracker.jar <options>`  
+  `java -jar JTaskTracker.jar <options>`
+  
 The _options_ could be:
 * `add <new task>`
 * `delete <id>`
