@@ -77,68 +77,34 @@ public class APIJSON {
         }
         return tasks;
     }
+    
     public static List<List> getList(String data) {
         int o_bracket = data.indexOf("[");
         int c_bracket = data.lastIndexOf("]");
         List<List> tasks = getTasks(data, o_bracket, c_bracket);
         return tasks;
     }
-    /*
-    public static List<List> getList(String lista) {
-
-        List<List> data = new ArrayList<>();
-        // Save index of square brackets
-        int o_bracket = lista.indexOf("[");
-        int c_bracket = lista.lastIndexOf("]");
-
-        int o_brace = lista.indexOf("{", o_bracket, c_bracket);
-        int c_brace = lista.indexOf("}", o_bracket, c_bracket);
-
-        do {
-            if (o_brace != -1) {
-                List task = new ArrayList<>();
-                int colon = lista.indexOf(":", o_brace, c_brace) + 1;
-                int aux = lista.indexOf(",", o_brace, c_brace);
-                int coma = (aux != -1) ? aux : c_brace;
-                do {
-                    if (colon != -1) {
-                        String fragment = lista.substring(colon, coma).strip();
-                        if (Pattern.matches("\".*\"", fragment)) {
-                            task.add(fragment.substring(1, fragment.length() - 1));
-                        } else if (Pattern.matches("\\d*", fragment)) {
-                            task.add(Integer.parseInt(fragment));
-                        } else if (fragment.equals("null")) {
-                            task.add(null);
-                        }
-                        colon = lista.indexOf(":", coma + 1, c_brace) + 1;
-                        aux = lista.indexOf(",", coma + 1, c_brace);
-                        coma = (aux != -1) ? aux : c_brace;
-                    }
-                } while (coma < c_brace);
-                String fragment = lista.substring(colon, coma).strip();
-                if (fragment.equals("null")) {
-                    task.add(null);
-                } else {
-                    task.add(fragment.substring(1, fragment.length() - 1));
-                }
-
-                o_brace = lista.indexOf("{", c_brace, c_bracket);
-                c_brace = lista.indexOf("}", c_brace + 1, c_bracket);
-                data.add(task);
-            }
-        } while (o_brace != -1);
-        return data;
-    }*/
-
+    
+    public static List getAdvancedList(List<List> tasks, String name){
+        List<List> filtered_tasks = new ArrayList<>();
+        for (List task : tasks) 
+            if(task.get(2).equals(name))
+                filtered_tasks.add(task);
+        return filtered_tasks;
+    }
+    
     public static int addElement(List<List> data, String task) {
         List new_task = new ArrayList();
+        int id = 0;
 
         if (data.isEmpty()) {
-            new_task.add(1);
+            id = 1;
+            new_task.add(id);
 
         } else {
             // set id getting the last id of a no-empty list
-            new_task.add((int) data.getLast().get(0) + 1);
+            id = (int) data.getLast().get(0) + 1;
+            new_task.add(id);
         }
         new_task.add(task);
         new_task.add("todo");
@@ -146,7 +112,7 @@ public class APIJSON {
         new_task.add(null);
 
         data.add(new_task);
-        return 0;
+        return id;
     }
 
     public static String prepareFormat(List<List> data) {
@@ -188,4 +154,55 @@ public class APIJSON {
         }
     }
 
+    public static int existTask(List<List> data, int id){
+        for (List task : data) 
+            if((int)task.get(0) == id) return 0;
+        return 1;
+    }
+
+    public static int deleteTask(List<List> data, int id){
+        for (List task : data) {
+            if((int)task.get(0) == id) {
+                data.remove(task);
+                return 0;
+            }
+        }
+        return 1;
+    }
+    
+    public static List getTaskFromList(List<List> tasks, int id){
+        for (List task : tasks) 
+            if((int)task.get(0) == id) return task;
+        return null;
+    }
+    
+    public static void updateTask(List<List> tasks,int id, String nuevo){
+        for (List task : tasks) {
+            if ((int)task.get(0) == id) {
+                task.set(1, nuevo);
+                task.set(4,new Date().toString());
+                break;
+            }
+        }
+    }
+    
+    public static int markInProgressTask(List<List> tasks, int id){
+        List task = getTaskFromList(tasks, id);
+        if(task == null){
+            return 1;
+        }
+        task.set(2, "in-progress");
+        task.set(4,new Date().toString());
+        return 0;
+    }
+    
+    public static int markDoneTask(List<List> tasks, int id){
+        List task = getTaskFromList(tasks, id);
+        if(task == null){
+            return 1;
+        }
+        task.set(2, "done");
+        task.set(4,new Date().toString());
+        return 0;
+    }
 }
